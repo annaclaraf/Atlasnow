@@ -1,4 +1,7 @@
 const knex = require('../database')
+const jwt  = require('jsonwebtoken')
+
+const authConfig = require('../config/auth')
 
 module.exports = {
     async index(req, res) {
@@ -15,7 +18,15 @@ module.exports = {
                 CPF, nome, email, telefone, setor
             })
 
-            return res.status(201).send()
+            const funcionario = await knex('funcionarios').first('*').where({  email })
+
+
+            const token = jwt.sign({ email: funcionario.email}, authConfig.secret, {
+                expiresIn: authConfig.expiration
+            })
+
+            return res.status(201).send({ nome, email, telefone, setor, token })
+
         } catch (error) {
             next(error)
         }

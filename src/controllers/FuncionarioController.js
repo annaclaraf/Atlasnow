@@ -5,50 +5,94 @@ const authConfig = require('../config/auth')
 
 module.exports = {
     async index(req, res) {
-        const funcionarios = await knex('funcionarios')
+        const funcionarios = await 
+            knex('funcionarios')
+            .join('endereços', 'endereços.funcionarioCPF', '=', 'funcionarios.CPF')
+            .select('funcionarios.*', 'rua', 'numero', 'CEP', 'cidade', 'estado')
 
         return res.json(funcionarios)
     },
 
-    async create(req, res, next) {
+    async create(req, res, next) {  
         try {
-            const { CPF, nome, email, telefone, setor } = req.body
+            const { CPF, nome, email, telefone, setor, rua, numero, CEP, cidade, estado } = req.body
+        
+            const trx = await knex.transaction();
 
             await knex('funcionarios').insert({
-                CPF, nome, email, telefone, setor
+                CPF, 
+                nome, 
+                email, 
+                telefone, 
+                setor
             })
 
-            const funcionario = await knex('funcionarios').first('*').where({  email })
+            await trx('endereços').insert({
+                funcionarioCPF: CPF,
+                rua, 
+                numero, 
+                CEP, 
+                cidade, 
+                estado
+            })            
 
+            await trx.commit()
+
+            const funcionario = await knex('funcionarios').first('*').where({  email })
 
             const token = jwt.sign({ email: funcionario.email}, authConfig.secret, {
                 expiresIn: authConfig.expiration
             })
 
-            return res.status(201).send({ nome, email, telefone, setor, token })
+            const endereço = await 
+                knex('endereços')
+                .where({funcionarioCPF: CPF})
+                .join('funcionarios', 'funcionarios.CPF', '=', 'endereços.funcionarioCPF')
+                .select('rua', 'numero', 'CEP', 'cidade', 'estado')
+
+
+            return res.status(201).send({ nome, email, telefone, setor, token, endereço})
 
         } catch (error) {
+            await trx.rollback()
             next(error)
         }
     },
 
     async update(req, res, next) {
-        try {
-            const { CPF, nome, email, telefone, setor } = req.body
-            const { id } = req.params 
-
+        const { CPF, nome, email, telefone, setor, rua, numero, CEP, cidade, estado } = req.body
+        const { id } = req.params 
+        
+        try {            
             await knex('funcionarios').update({
-                CPF,
                 nome, 
                 email,
                 telefone,
                 setor
-            }).where({ id })
+            }).where({ CPF: id })
 
             return res.send()
 
         } catch (error) {
-            next(error)
+            try {
+                const trx = await knex.transaction();
+
+                await trx('endereços').update({
+                    rua, 
+                    numero, 
+                    CEP, 
+                    cidade, 
+                    estado,
+                    funcionarioCPF: CPF
+                }).where({ funcionarioCPF: id })
+
+                await trx.commit()
+
+                return res.send()
+            } catch(error) {
+                await trx.rollback()
+                next(error) 
+            }
         }
     },
 
@@ -56,7 +100,7 @@ module.exports = {
         try {
             const { id } = req.params 
 
-            await knex('funcionarios').where({ id }).del()
+            await knex('funcionarios').where({ CPF: id }).del()
 
             return res.send()
 

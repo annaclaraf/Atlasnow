@@ -59,6 +59,18 @@ module.exports = {
         }
     },
 
+    async show(req, res, next) {  
+        try {
+            const { id } = req.params 
+
+            const funcionario = await knex('funcionarios').where({ CPF: id })
+
+            return res.json(funcionario)
+        } catch (error) {
+            console.log(error)
+        }
+    },
+
     async update(req, res, next) {
         const { CPF, nome, email, telefone, setor, rua, numero, CEP, cidade, estado } = req.body
         const { id } = req.params 

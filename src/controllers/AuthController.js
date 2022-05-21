@@ -6,25 +6,23 @@ const authConfig = require('../config/auth')
 module.exports = {
     async login(req, res, next) {
         try {
-            const { email, CPF } = req.body
+            const { email, password } = req.body
 
-            const funcionario = await knex('funcionarios').first('*').where({  email })
+            const admin = await knex('admin').first('*').where({  email })
 
-            if(!funcionario) {
-                return res.status(400).send({ error: "Funcionário não cadastrado"})
+            if(!admin) {
+                return res.status(400).send({ error: "Administrador inválido"})
             }
 
-            if(CPF != funcionario.CPF) {
+            if(password != admin.password) {
                 return res.status(400).send({ error: "Senha inválida"})
             }
 
-            const token = jwt.sign({ email: funcionario.email}, authConfig.secret, {
+            const token = jwt.sign({ email: admin.email}, authConfig.secret, {
                 expiresIn: authConfig.expiration
             })
 
-            const emailFun = funcionario.email
-
-            return res.status(201).send({ email: emailFun, token })
+            return res.status(201).send({ email, token })
         } catch (error) {
             next(error)
         }

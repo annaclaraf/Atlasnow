@@ -16,6 +16,17 @@ module.exports = {
     async create(req, res, next) {  
         try {
             const { CPF, nome, email, telefone, setor, rua, numero, CEP, cidade, estado } = req.body
+
+            const funcionario1 = await knex('funcionarios').first('*').where({  CPF })
+            const funcionario2 = await knex('funcionarios').first('*').where({  email })
+
+            if(funcionario1)  {
+                return res.status(400).json({ error: 'Funcionario com esse CPF já cadastrado'});
+            }
+
+            if(funcionario2)  {
+                return res.status(400).json({ error: 'Funcionario com esse email já cadastrado'});
+            }
         
             const trx = await knex.transaction();
 
@@ -63,7 +74,12 @@ module.exports = {
         try {
             const { id } = req.params 
 
-            const funcionario = await knex('funcionarios').where({ CPF: id })
+            const funcionario = await 
+                knex('funcionarios')
+                .join('endereços', 'endereços.funcionarioCPF', '=', 'funcionarios.CPF')
+                .select('funcionarios.*', 'rua', 'numero', 'CEP', 'cidade', 'estado')
+                .where({ CPF: id })
+
 
             return res.json(funcionario)
         } catch (error) {
@@ -72,8 +88,15 @@ module.exports = {
     },
 
     async update(req, res, next) {
-        const { CPF, nome, email, telefone, setor, rua, numero, CEP, cidade, estado } = req.body
+        const { nome, email, telefone, setor, rua, numero, CEP, cidade, estado } = req.body
         const { id } = req.params 
+
+        const funcionario = await knex('funcionarios').first('*').where({  email })
+        const funcionario1 = await knex('funcionarios').first('*').where({  CPF: id })
+
+        if(funcionario && email != funcionario1.email)  {
+            return res.status(400).json({ error: 'Email já cadastrado'});
+        }
         
         try {            
             await knex('funcionarios').update({
@@ -95,7 +118,7 @@ module.exports = {
                     CEP, 
                     cidade, 
                     estado,
-                    funcionarioCPF: CPF
+                    funcionarioCPF: id
                 }).where({ funcionarioCPF: id })
 
                 await trx.commit()

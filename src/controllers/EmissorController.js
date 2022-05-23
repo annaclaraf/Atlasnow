@@ -43,7 +43,7 @@ module.exports = {
                 knex('emissores')
                 .join('funcionarios', 'funcionarios.CPF', '=', 'emissores.CPF')
                 .select('emissores.*', 'funcionarios.nome')
-                .where({ CPF: id })
+                .where({ id })
 
             return res.json(emissor)
         } catch (error) {
@@ -52,11 +52,12 @@ module.exports = {
     },
 
     async update(req, res, next) {
-        const { dataAdmissao, dataFimAdmissao } = req.body
+        const { CPF, dataAdmissao, dataFimAdmissao } = req.body
         const { id } = req.params
 
         try {
             await knex('emissores').update({
+                CPF, 
                 dataAdmissao,
                 dataFimAdmissao
             }).where({ id })

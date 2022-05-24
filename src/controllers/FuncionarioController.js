@@ -17,6 +17,21 @@ module.exports = {
         try {
             const { CPF, nome, email, telefone, setor, rua, numero, CEP, cidade, estado } = req.body
 
+            if(
+                !CPF || 
+                !nome ||
+                !email ||
+                !telefone ||
+                !setor ||
+                !rua ||
+                !numero ||
+                !CEP ||
+                !cidade ||
+                !estado
+            ) {
+                return res.status(400).json({ error: 'Preencha todos os campos'});
+            }
+
             const funcionario1 = await knex('funcionarios').first('*').where({  CPF })
             const funcionario2 = await knex('funcionarios').first('*').where({  email })
 
@@ -91,11 +106,13 @@ module.exports = {
         const { nome, email, telefone, setor, rua, numero, CEP, cidade, estado } = req.body
         const { id } = req.params 
 
-        const funcionario = await knex('funcionarios').first('*').where({  email })
-        const funcionario1 = await knex('funcionarios').first('*').where({  CPF: id })
+        if(email) {
+            const funcionario = await knex('funcionarios').first('*').where({  email })
+            const funcionario1 = await knex('funcionarios').first('*').where({ CPF:id })
 
-        if(funcionario && email != funcionario1.email)  {
-            return res.status(400).json({ error: 'Email já cadastrado'});
+            if((funcionario) && (email != funcionario1.email))  {
+                return res.status(400).json({ error: 'Email já cadastrado'});
+            }
         }
         
         try {            

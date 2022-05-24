@@ -14,6 +14,10 @@ module.exports = {
         try {
             const { CPF, dataAdmissao, dataFimAdmissao } = req.body
 
+            if(!CPF || !dataAdmissao) {
+                return res.status(400).json({ error: 'Preencha os campos obrigatórios'});
+            }
+
             const funcionario = await knex('funcionarios').first('*').where({  CPF })
 
             if(!funcionario) {
@@ -45,6 +49,11 @@ module.exports = {
                 .select('emissores.*', 'funcionarios.nome')
                 .where({ id })
 
+            if(emissor.length == 0 ) {
+                return res.status(400).json({ error: 'Nenhum emissor encontrado'});
+
+            }
+
             return res.json(emissor)
         } catch (error) {
             console.log(error)
@@ -54,6 +63,14 @@ module.exports = {
     async update(req, res, next) {
         const { CPF, dataAdmissao, dataFimAdmissao } = req.body
         const { id } = req.params
+
+        if(CPF){
+            const funcionario = await knex('funcionarios').first('*').where({ CPF })
+    
+            if(!funcionario) {
+                return res.status(400).json({ error: 'Nenhum funcionário cadastrado com esse CPF'});
+            }
+        }
 
         try {
             await knex('emissores').update({

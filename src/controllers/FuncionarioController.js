@@ -95,6 +95,9 @@ module.exports = {
                 .select('funcionarios.*', 'rua', 'numero', 'CEP', 'cidade', 'estado')
                 .where({ CPF: id })
 
+            if(funcionario.length == 0 ) {
+                return res.status(400).json({ error: 'Nenhum funcionario encontrado'});
+            }
 
             return res.json(funcionario)
         } catch (error) {

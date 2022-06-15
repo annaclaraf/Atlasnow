@@ -6,6 +6,7 @@ const routes = express.Router()
 const FuncionarioController = require('./controllers/FuncionarioController')
 const EmissorController = require('./controllers/EmissorController')
 const AuthController = require('./controllers/AuthController')
+const SetorController = require('./controllers/SetorController')
 
 routes.post('/login', AuthController.login)
 
@@ -22,5 +23,11 @@ routes.get('/emissores/:id', EmissorController.show)
 routes.post('/emissores', EmissorController.create)
 routes.put('/emissores/:id', EmissorController.update)
 routes.delete('/emissores/:id', EmissorController.delete)
+
+routes.get('/setor', SetorController.index)
+routes.get('/setor/:id', SetorController.show)
+routes.post('/setor', SetorController.create)
+routes.put('/setor/:id', SetorController.update)
+routes.delete('/setor/:id', SetorController.delete)
 
 module.exports = routes 

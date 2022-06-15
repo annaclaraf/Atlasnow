@@ -6,7 +6,9 @@ exports.up = function(knex) {
         table.string('email').notNullable().unique()
         table.string('telefone').notNullable()
         table.string('setor').notNullable()
+                
         
+
         table.timestamp('created_at').defaultTo(knex.fn.now())
         table.timestamp('updated_at').defaultTo(knex.fn.now())
       })

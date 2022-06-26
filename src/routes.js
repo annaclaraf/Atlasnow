@@ -7,6 +7,7 @@ const FuncionarioController = require('./controllers/FuncionarioController')
 const EmissorController = require('./controllers/EmissorController')
 const AuthController = require('./controllers/AuthController')
 const SetorController = require('./controllers/SetorController')
+const AtaController = require('./controllers/AtaController')
 
 routes.post('/login', AuthController.login)
 
@@ -29,5 +30,12 @@ routes.get('/setor/:id', SetorController.show)
 routes.post('/setor', SetorController.create)
 routes.put('/setor/:id', SetorController.update)
 routes.delete('/setor/:id', SetorController.delete)
+
+routes.get('/atas', AtaController.index)
+routes.get('/atas/:id', AtaController.show)
+routes.get('/atas/palavrasChave/:id', AtaController.showByPalavrasChave)
+routes.post('/atas', AtaController.create)
+routes.put('/atas/:id', AtaController.update)
+routes.delete('/atas/:id', AtaController.delete)
 
 module.exports = routes 

@@ -17,6 +17,14 @@ module.exports = {
           .json({ error: 'Preencha os campos obrigatórios' })
       }
 
+      const setor1 = await knex('setor').first('*').where({ nome: nome })
+
+      if (setor1) {
+        return res
+          .status(400)
+          .json({ error: 'Já existe um setor cadastrado com esse nome!' })
+      }
+
       const id = await knex('setor').insert({
         nome
       })
@@ -30,6 +38,22 @@ module.exports = {
   },
 
   async show(req, res, next) {
+    try {
+      const { id } = req.params
+
+      const setor = await knex('setor').where({ id })
+
+      if (setor.length == 0) {
+        return res.status(400).json({ error: 'Nenhum setor encontrado' })
+      }
+
+      return res.json(setor)
+    } catch (error) {
+      console.log(error)
+    }
+  },
+
+  async showByName(req, res, next) {
     try {
       const { id } = req.params
 
@@ -50,9 +74,9 @@ module.exports = {
     const { id } = req.params
 
     const setor = await knex('setor').first('*').where({ nome: nome })
-    console.log(nome)
+    const setor1 = await knex('setor').first('*').where({ id })
 
-    if (setor) {
+    if (setor && setor.id != setor1.id) {
       return res
         .status(400)
         .json({ error: 'Já existe um setor cadastrado com esse nome!' })

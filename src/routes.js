@@ -27,6 +27,7 @@ routes.delete('/emissores/:id', EmissorController.delete)
 
 routes.get('/setor', SetorController.index)
 routes.get('/setor/:id', SetorController.show)
+routes.get('/setor/nome/:id', SetorController.showByName)
 routes.post('/setor', SetorController.create)
 routes.put('/setor/:id', SetorController.update)
 routes.delete('/setor/:id', SetorController.delete)

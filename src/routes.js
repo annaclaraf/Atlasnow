@@ -9,7 +9,7 @@ const AuthController = require('./controllers/AuthController')
 const SetorController = require('./controllers/SetorController')
 const AtaController = require('./controllers/AtaController')
 
-routes.post('/login', AuthController.login)
+routes.post('/:user/login', AuthController.login)
 
 routes.use(authMiddleware);
 

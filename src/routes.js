@@ -22,6 +22,7 @@ routes.delete('/funcionarios/:id', FuncionarioController.delete)
 
 routes.get('/emissores', EmissorController.index)
 routes.get('/emissores/:id', EmissorController.show)
+routes.get('/emissores/nome/:id', EmissorController.showByName)
 routes.post('/emissores', EmissorController.create)
 routes.put('/emissores/:id', EmissorController.update)
 routes.delete('/emissores/:id', EmissorController.delete)

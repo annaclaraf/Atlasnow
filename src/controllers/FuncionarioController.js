@@ -128,11 +128,7 @@ module.exports = {
   async showByName(req, res, next) {
     try {
       const { id } = req.params
-
-      const funcionario = await knex('funcionarios')
-        .join('endereços', 'endereços.funcionarioCPF', '=', 'funcionarios.CPF')
-        .select('funcionarios.*', 'rua', 'numero', 'CEP', 'cidade', 'estado')
-        .where({ nome: id })
+      const funcionario = await knex('funcionarios').where('nome', 'like', `%${id}%`)
 
       if (funcionario.length == 0) {
         return res.status(400).json({ error: 'Nenhum funcionario encontrado' })

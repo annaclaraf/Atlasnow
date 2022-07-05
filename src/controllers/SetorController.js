@@ -57,7 +57,11 @@ module.exports = {
     try {
       const { id } = req.params
 
+      console.log(id)
+
       const setor = await knex('setor').where({ nome: id })
+
+      console.log(id, setor)
 
       if (setor.length == 0) {
         return res.status(400).json({ error: 'Nenhum setor encontrado' })

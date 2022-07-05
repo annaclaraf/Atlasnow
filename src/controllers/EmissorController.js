@@ -60,6 +60,27 @@ module.exports = {
         }
     },
 
+    async showByName(req, res, next) {
+        try {
+            const { id } = req.params
+
+            const emissor = await knex('emissores')
+            .join('funcionarios', 'funcionarios.CPF', '=', 'emissores.CPF')
+            .where('funcionarios.nome', 'like', `%${id}%`)
+
+            
+
+            if(emissor.length == 0 ) {
+                return res.status(400).json({ error: 'Nenhum emissor encontrado'});
+
+            }
+
+            return res.json(emissor)
+        } catch (error) {
+            console.log(error)
+        }
+    },
+
     async update(req, res, next) {
         const { CPF, dataAdmissao, dataFimAdmissao } = req.body
         const { id } = req.params

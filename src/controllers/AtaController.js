@@ -17,7 +17,7 @@ module.exports = {
                 setor,
                 descricao,
                 palavrasChave,
-                ata
+                ata, emissorId, status
             } = req.body
 
             if (
@@ -33,7 +33,7 @@ module.exports = {
                 return res.status(400).json({ error: 'Preencha todos os campos' })
             }
 
-            await knex('atas').insert({
+            const id = await knex('atas').insert({
                 tituloReuniao,
                 dataInicio,
                 dataFim,
@@ -41,12 +41,46 @@ module.exports = {
                 setor,
                 descricao,
                 palavrasChave,
-                ata
+                ata, emissorId, status
+            })
+
+            const a = await knex('atas').where({ id })
+
+
+            return res
+                .status(201)
+                .json(a)
+        } catch (error) {
+            next(error)
+        }
+    },
+
+    async createParticipantes(req, res, next) {
+        try {
+            const {funcionarioCPF, ataId} = req.body
+
+            await knex('participantes').insert({
+                funcionarioCPF, ataId
             })
 
             return res
                 .status(201)
                 .send()
+        } catch (error) {
+            next(error)
+        }
+    },
+
+    async showParticipantes(req, res, next) {
+        try {
+            const { id } = req.params
+
+            const participantes = await knex('participantes')
+            .join('funcionarios', 'funcionarios.CPF', '=', 'participantes.funcionarioCPF')
+            .select('participantes.*', 'funcionarios.nome')
+            .where({ ataId: id })
+
+            return res.json(participantes)
         } catch (error) {
             next(error)
         }
@@ -58,9 +92,12 @@ module.exports = {
 
             const ata = await knex('atas').where({ id })
 
+
             if (!ata) {
                 return res.status(400).json({ error: 'Nenhuma ata encontrada' })
             }
+            
+            console.log(ata)
 
             return res.json(ata)
         } catch (error) {

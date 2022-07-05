@@ -56,12 +56,14 @@ module.exports = {
                 if(password != emissor.CPF) {
                     return res.status(400).send({ error: "Senha inválida"})
                 }
+
+                let e = emissor.CPF 
     
                 const token = jwt.sign({ email: emissor.email}, authConfig.secret, {
                     expiresIn: authConfig.expiration
                 })
 
-                return res.status(201).send({ email, token })
+                return res.status(201).send({ email, token, e })
             }
         } catch (error) {
             next(error)

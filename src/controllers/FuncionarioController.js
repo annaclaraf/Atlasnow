@@ -125,6 +125,25 @@ module.exports = {
     }
   },
 
+  async showByName(req, res, next) {
+    try {
+      const { id } = req.params
+
+      const funcionario = await knex('funcionarios')
+        .join('endereços', 'endereços.funcionarioCPF', '=', 'funcionarios.CPF')
+        .select('funcionarios.*', 'rua', 'numero', 'CEP', 'cidade', 'estado')
+        .where({ nome: id })
+
+      if (funcionario.length == 0) {
+        return res.status(400).json({ error: 'Nenhum funcionario encontrado' })
+      }
+
+      return res.json(funcionario)
+    } catch (error) {
+      console.log(error)
+    }
+  },
+
   async update(req, res, next) {
     const { nome, email, telefone, setor, rua, numero, CEP, cidade, estado } =
       req.body

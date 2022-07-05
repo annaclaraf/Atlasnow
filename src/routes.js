@@ -15,6 +15,7 @@ routes.use(authMiddleware);
 
 routes.get('/funcionarios', FuncionarioController.index)
 routes.get('/funcionarios/:id', FuncionarioController.show)
+routes.get('/funcionarios/nome/:id', FuncionarioController.showByName)
 routes.post('/funcionarios', FuncionarioController.create)
 routes.put('/funcionarios/:id', FuncionarioController.update)
 routes.delete('/funcionarios/:id', FuncionarioController.delete)
@@ -36,6 +37,8 @@ routes.get('/atas', AtaController.index)
 routes.get('/atas/:id', AtaController.show)
 routes.get('/atas/palavrasChave/:id', AtaController.showByPalavrasChave)
 routes.post('/atas', AtaController.create)
+routes.post('/atas/participantes', AtaController.createParticipantes)
+routes.get('/atas/participantes/:id', AtaController.showParticipantes)
 routes.put('/atas/:id', AtaController.update)
 routes.delete('/atas/:id', AtaController.delete)
 

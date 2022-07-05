@@ -1,6 +1,7 @@
 exports.up = function (knex) {
   return knex.schema.createTable('atas', table => {
     table.increments('id')
+    table.string('emissorId').notNullable()
     table.string('tituloReuniao').notNullable()
     table.timestamp('dataInicio').notNullable()
     table.timestamp('dataFim').notNullable()
@@ -8,7 +9,8 @@ exports.up = function (knex) {
     table.string('setor').notNullable()
     table.string('descricao').notNullable()
     table.string('palavrasChave').notNullable()
-    table.string('ata').notNullable()
+    table.longtext('ata').notNullable()
+    table.string('status').notNullable()
 
     table.timestamp('dataEmissao').defaultTo(knex.fn.now())
 
